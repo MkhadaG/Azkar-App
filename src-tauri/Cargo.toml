@@ -1,0 +1,26 @@
+[package]
+name = "azkar"
+version = "0.2.0"
+description = "A calm, private companion for everyday worship"
+authors = ["Azkar"]
+edition = "2021"
+
+[lib]
+name = "azkar_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon", "image-png"] }
+tauri-plugin-notification = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-single-instance = "2"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
