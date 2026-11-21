@@ -1,0 +1,28 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capabilities for Azkar main window and taskbar prayer widget",
+  "windows": [
+    "main",
+    "taskbar-widget",
+    "prayer-calendar"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-close",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-internal-toggle-maximize",
+    "core:window:allow-is-maximized",
+    "core:window:allow-unminimize",
+    "core:window:allow-set-focus",
+    "core:tray:default",
+    "core:menu:default",
+    "notification:default",
+    "opener:default",
+    "core:window:allow-outer-position",
+    "core:window:allow-scale-factor"
+  ]
+}
