@@ -840,4 +840,12 @@ body:has(.prayer-calendar-root) { overflow: hidden; }
   .notification-test-actions .btn { flex: 1 1 auto; }
 }
 
-
+.update-notice {
+  position: fixed; inset-inline-end: 20px; bottom: 20px; z-index: 50;
+  display: flex; align-items: center; gap: 12px; max-width: 420px;
+  padding: 12px 14px; border-radius: 14px;
+  background: var(--surface); border: 1px solid var(--line); color: var(--ink);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+.update-notice > div { display: grid; gap: 2px; }
+.update-notice span { color: var(--ink-2); font-size: 0.9rem; }
