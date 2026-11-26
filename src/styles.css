@@ -840,21 +840,4 @@ body:has(.prayer-calendar-root) { overflow: hidden; }
   .notification-test-actions .btn { flex: 1 1 auto; }
 }
 
-.update-notice {
-  position: fixed; inset-inline-end: 20px; bottom: 20px; z-index: 50;
-  box-sizing: border-box; display: flex; align-items: center; gap: 12px;
-  width: min(440px, calc(100vw - 32px)); max-width: 440px;
-  padding: 12px 14px; border-radius: 14px;
-  background: var(--surface); border: 1px solid var(--line); color: var(--ink);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
-}
-.update-notice-copy { min-width: 0; flex: 1 1 auto; display: grid; gap: 3px; }
-.update-notice-copy strong { color: var(--ink); font-size: 13px; font-weight: 700; line-height: 1.4; }
-.update-notice-copy span { color: var(--ink-2); font-size: 11px; line-height: 1.45; }
-.update-notice-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 7px; }
-.update-notice-actions .btn { min-height: 34px; padding: 0 11px; font-size: 12px; white-space: nowrap; }
-.update-notice-actions > span { min-width: 38px; color: var(--ink-2); font-size: 12px; text-align: center; font-variant-numeric: tabular-nums; }
-@media (max-width: 480px) {
-  .update-notice { inset-inline: 12px; bottom: 12px; width: auto; max-width: none; align-items: flex-start; flex-wrap: wrap; }
-  .update-notice-actions { width: 100%; justify-content: flex-end; }
-}
+
