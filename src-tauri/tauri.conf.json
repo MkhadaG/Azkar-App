@@ -44,8 +44,23 @@
     ],
     "windows": {
       "webviewInstallMode": {
-        "type": "downloadBootstrapper",
+        "type": "embedBootstrapper",
         "silent": true
+      },
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    },
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEU5QzcwMTlCOTMyRTk5MzcKUldRM21TNlRtd0hINlVaejQweFJDU3Jsd29DN2xIWkRoTmlPSFJVM2Qyd0ZQNWxtVjRhOFhtMlQK",
+      "endpoints": [
+        "https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
       }
     }
   }

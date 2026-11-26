@@ -10,6 +10,7 @@ import { FeatureView } from "./features/FeatureView";
 import { Icon, type IconName } from "./components/Icon";
 import { Onboarding } from "./components/Onboarding";
 import { TitleBar } from "./components/TitleBar";
+import { UpdateNotice } from "./components/UpdateNotice";
 import { TrayPopup } from "./components/TrayPopup";
 import { TaskbarPrayerWidget } from "./components/TaskbarPrayerWidget";
 import { PrayerCalendarPopup } from "./components/PrayerCalendarPopup";
@@ -271,6 +272,7 @@ function App() {
   return (
     <div className="app">
       <TitleBar language={language} timezone={timezone} />
+      <UpdateNotice ar={ar} />
       <div className="shell">
         <aside className="sidebar">
           <button
