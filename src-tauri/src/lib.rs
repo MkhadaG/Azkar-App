@@ -1096,8 +1096,8 @@ fn toggle_tray_popup(app: &AppHandle) {
                 .build(),
         );
         #[cfg(target_os = "windows")]
-        if let (Ok(size), Ok(scale)) = (window.inner_size(), window.scale_factor()) {
-            apply_rounded_window_region(&window, size.width, size.height, scale, 5.0, 17.0);
+        if let Ok(size) = window.outer_size() {
+            apply_square_window_region(&window, size.width, size.height);
         }
         let _ = window.show();
         let _ = window.set_focus();
@@ -1160,7 +1160,7 @@ fn prayer_calendar_background(theme: &str) -> Color {
     if theme == "light" {
         Color(247, 243, 234, 190)
     } else {
-        Color(18, 22, 30, 182)
+        Color(8, 9, 12, 182)
     }
 }
 
@@ -1175,10 +1175,11 @@ fn style_prayer_calendar_window(window: &tauri::WebviewWindow, theme: &str) -> R
         (prayer_calendar_background("dark"), "dark")
     };
     window.set_background_color(Some(background)).map_err(|error| error.to_string())?;
+    let effect_color = if theme == "light" { background } else { Color(8, 9, 12, 154) };
     let _ = window.set_effects(
         EffectsBuilder::new()
             .effect(Effect::Acrylic)
-            .color(background)
+            .color(effect_color)
             .build(),
     );
     #[cfg(target_os = "windows")]
@@ -1785,10 +1786,7 @@ pub fn run() {
                     }
                 } else if let Ok(scale) = window.scale_factor() {
                     let dimensions = window.outer_size().unwrap_or(*size);
-                    if window.label() == "tray" {
-                        // Keep the notification-area tray popup exactly as it was.
-                        apply_rounded_window_region(window, dimensions.width, dimensions.height, scale, 5.0, 17.0);
-                    } else if window.label() == "prayer-calendar" {
+                    if window.label() == "tray" || window.label() == "prayer-calendar" {
                         apply_square_window_region(window, dimensions.width, dimensions.height);
                     }
                 }
