@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { invoke, isTauri } from "@tauri-apps/api/core";
 import { copy, navigation, sectionTitles } from "./app/locale";
+import { homeHadiths } from "./app/hadiths";
 import { initialState, type AppState, type NavSection } from "./app/model";
 import { loadAppState, saveAppState } from "./app/storage";
 import { notify } from "./app/desktop";
@@ -63,6 +64,7 @@ function App() {
   const [loadError, setLoadError] = useState("");
   const [saveError, setSaveError] = useState("");
   const [now, setNow] = useState(() => new Date());
+  const [dailyHadith] = useState(() => homeHadiths[Math.floor(Math.random() * homeHadiths.length)]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const dayRef = useRef("");
 
@@ -350,6 +352,7 @@ function App() {
               section={section}
               state={state}
               text={text}
+              hadith={dailyHadith}
               onNavigate={setSection}
               onChange={setState}
               schedules={schedules}
