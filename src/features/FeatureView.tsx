@@ -1,4 +1,5 @@
 import type { AppState, NavSection } from "../app/model";
+import type { HomeHadith } from "../app/hadiths";
 import type { copy } from "../app/locale";
 import type { PrayerSchedule } from "../services/prayer";
 import { AzkarPage } from "./AzkarPage";
@@ -16,6 +17,7 @@ export interface FeatureViewProps {
   section: NavSection;
   state: AppState;
   text: Text;
+  hadith: HomeHadith;
   onNavigate: (section: NavSection) => void;
   onChange: (update: (state: AppState) => AppState) => void;
   schedules: PrayerSchedule[];
@@ -25,11 +27,11 @@ export interface FeatureViewProps {
   onEditLocation: () => void;
 }
 
-export function FeatureView({ section, state, text, onNavigate, onChange, schedules, loading, error, refresh, onEditLocation }: FeatureViewProps) {
+export function FeatureView({ section, state, text, hadith, onNavigate, onChange, schedules, loading, error, refresh, onEditLocation }: FeatureViewProps) {
   return (
     <div className="page-enter" key={section}>
       {section === "home" && (
-        <HomePage state={state} text={text} onNavigate={onNavigate} schedules={schedules} loading={loading} error={error} refresh={refresh} />
+        <HomePage state={state} text={text} hadith={hadith} onNavigate={onNavigate} schedules={schedules} loading={loading} error={error} refresh={refresh} />
       )}
       {section === "prayer" && (
         <PrayerPage state={state} text={text} onOpenSettings={() => onNavigate("settings")} schedules={schedules} loading={loading} error={error} refresh={refresh} />
