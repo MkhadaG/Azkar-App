@@ -841,11 +841,19 @@ body:has(.prayer-calendar-root) { overflow: hidden; }
 }
 
 .update-notice {
-  position: fixed; inset-inline-end: 20px; bottom: 20px; z-index: 50;
-  display: flex; align-items: center; gap: 12px; max-width: 420px;
-  padding: 12px 14px; border-radius: 14px;
+  position: relative; inset: auto; z-index: auto;
+  box-sizing: border-box; width: 100%; max-width: none; margin: 0 0 16px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 15px 17px; border-radius: 14px;
   background: var(--surface); border: 1px solid var(--line); color: var(--ink);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--shadow-soft);
 }
-.update-notice > div { display: grid; gap: 2px; }
-.update-notice span { color: var(--ink-2); font-size: 0.9rem; }
+.update-notice-copy { min-width: 0; flex: 1 1 250px; display: grid; gap: 4px; }
+.update-notice-copy strong { color: var(--ink); font-size: 14px; font-weight: 700; line-height: 1.4; }
+.update-notice-copy span { color: var(--muted); font-size: 12px; line-height: 1.55; }
+.update-notice-actions { display: flex; flex: 0 0 auto; align-items: center; flex-wrap: wrap; gap: 8px; }
+.update-notice-actions > span { min-width: 38px; color: var(--ink-2); font-size: 12px; text-align: center; font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) {
+  .update-notice-actions { width: 100%; }
+  .update-notice-actions .btn { flex: 1 1 auto; }
+}
