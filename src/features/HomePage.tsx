@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import type { AppState, NavSection } from "../app/model";
+import type { HomeHadith } from "../app/hadiths";
 import type { copy } from "../app/locale";
 import { Countdown, useNow } from "../components/Countdown";
 import { Icon, type IconName } from "../components/Icon";
@@ -10,6 +11,7 @@ const prayerOrder = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"] as const;
 interface HomePageProps {
   state: AppState;
   text: (typeof copy)["ar"] | (typeof copy)["en"];
+  hadith: HomeHadith;
   onNavigate: (section: NavSection) => void;
   schedules: PrayerSchedule[];
   loading: boolean;
@@ -17,7 +19,7 @@ interface HomePageProps {
   refresh: () => void;
 }
 
-export function HomePage({ state, text, onNavigate, schedules, loading, error, refresh }: HomePageProps) {
+export function HomePage({ state, text, hadith, onNavigate, schedules, loading, error, refresh }: HomePageProps) {
   const { language, location } = state.preferences;
   const timezone = location?.timezone;
   const ar = language === "ar";
@@ -124,8 +126,8 @@ export function HomePage({ state, text, onNavigate, schedules, loading, error, r
 
       <blockquote className="card quote-card">
         <span className="eyebrow">{text.dailyReminder}</span>
-        <p>{text.reminderText}</p>
-        <cite>{text.source}</cite>
+        <p>{ar ? hadith.ar : hadith.en}</p>
+        <cite>{ar ? hadith.sourceAr : hadith.sourceEn}</cite>
       </blockquote>
     </div>
   );
