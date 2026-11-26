@@ -36,9 +36,9 @@ jobs:
         run: |
           set -euo pipefail
           tag_version="${GITHUB_REF_NAME#v}"
-          config_version="$(node -p \"JSON.parse(require('fs').readFileSync('src-tauri/tauri.conf.json', 'utf8')).version\")"
-          package_version="$(node -p \"JSON.parse(require('fs').readFileSync('package.json', 'utf8')).version\")"
-          cargo_version="$(grep -m1 '^version = ' src-tauri/Cargo.toml | cut -d '\\"' -f2)"
+          config_version="$(node -e 'console.log(JSON.parse(require("fs").readFileSync("src-tauri/tauri.conf.json", "utf8")).version)')"
+          package_version="$(node -e 'console.log(JSON.parse(require("fs").readFileSync("package.json", "utf8")).version)')"
+          cargo_version="$(grep -m1 '^version = ' src-tauri/Cargo.toml | cut -d '"' -f2)"
 
           echo "Release tag: $tag_version"
           echo "Tauri version: $config_version"
