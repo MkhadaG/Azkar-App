@@ -1154,14 +1154,10 @@ fn prayer_calendar_position(_app: &AppHandle) -> (f64, f64) {
     (700.0, 350.0)
 }
 
-fn prayer_calendar_background(theme: &str) -> Color {
-    // Acrylic tint for the calendar flyout. Keep a little transparency so the
-    // Windows backdrop material can show through the same way as the tray flyout.
-    if theme == "light" {
-        Color(247, 243, 234, 190)
-    } else {
-        Color(8, 9, 12, 182)
-    }
+fn prayer_calendar_background(_theme: &str) -> Color {
+    // Keep the flyout's outer acrylic surface consistent with the system-tray popup.
+    // The prayer content itself still follows the selected app theme.
+    Color(8, 9, 12, 182)
 }
 
 
@@ -1784,11 +1780,9 @@ pub fn run() {
                         let dimensions = window.outer_size().unwrap_or(*size);
                         apply_rounded_window_region(window, dimensions.width, dimensions.height, scale, 0.0, 19.0);
                     }
-                } else if let Ok(scale) = window.scale_factor() {
+                } else if window.label() == "tray" || window.label() == "prayer-calendar" {
                     let dimensions = window.outer_size().unwrap_or(*size);
-                    if window.label() == "tray" || window.label() == "prayer-calendar" {
-                        apply_square_window_region(window, dimensions.width, dimensions.height);
-                    }
+                    apply_square_window_region(window, dimensions.width, dimensions.height);
                 }
             }
             _ => {}
