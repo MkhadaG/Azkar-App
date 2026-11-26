@@ -677,10 +677,7 @@ body:has(.prayer-calendar-root) { overflow: hidden; }
 .prayer-calendar-empty { margin: 12px 2px; color: rgba(235,239,245,.72); font-size: 12px; }
 .prayer-calendar-footer { margin-top: auto; padding-top: 8px; border-top: 1px solid rgba(255,255,255,.12); color: rgba(235,239,245,.58); font-size: 9px; }
 .prayer-calendar-root.is-light .prayer-calendar-panel {
-  border-color: rgba(99,83,59,.20);
-  background: linear-gradient(145deg, rgba(255,252,245,.84) 0%, rgba(246,241,231,.83) 62%, rgba(235,229,216,.86) 100%);
   color: #30291f;
-  box-shadow: 0 12px 34px rgba(67,52,30,.12), inset 0 1px 0 rgba(255,255,255,.94), inset 0 -1px 0 rgba(135,111,72,.08);
 }
 .prayer-calendar-root.is-light .prayer-calendar-eyebrow,
 .prayer-calendar-root.is-light .prayer-calendar-next-label,
