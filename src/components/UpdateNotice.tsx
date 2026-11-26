@@ -17,7 +17,7 @@ function wasDismissed(version: string, fallbackVersion: string | null): boolean 
   }
 }
 
-/** Shows an in-page banner for newer signed releases and installs them in place. */
+/** Shows the original v0.4.10 floating update card and installs signed releases in place. */
 export function UpdateNotice({ ar }: { ar: boolean }) {
   const [update, setUpdate] = useState<Update | null>(null);
   const [phase, setPhase] = useState<Phase>("available");
@@ -48,8 +48,8 @@ export function UpdateNotice({ ar }: { ar: boolean }) {
       if (document.visibilityState === "visible") void look();
     };
 
-    // The main window can be hidden in the tray without restarting the app.
-    // Recheck when the user brings it back, so newly published releases appear immediately.
+    // The main window may be hidden in the tray without restarting the app.
+    // Recheck when it becomes active again, as well as periodically.
     void look();
     window.addEventListener("focus", look);
     document.addEventListener("visibilitychange", checkWhenVisible);
@@ -101,35 +101,35 @@ export function UpdateNotice({ ar }: { ar: boolean }) {
   if (!update) return null;
 
   return (
-    <section className="update-notice" role="status" aria-live="polite">
-      <div className="update-notice-copy">
+    <div className="update-notice" role="status">
+      <div>
         <strong>
-          {ar ? `يتوفر تحديث جديد من أذكار (${update.version})` : `Azkar ${update.version} is available`}
+          {ar ? `تحديث جديد ${update.version}` : `Azkar ${update.version} is available`}
         </strong>
         <span>
           {phase === "failed"
-            ? ar ? "تعذّر تثبيت التحديث. حاول مرة أخرى." : "The update could not be installed. Try again."
+            ? ar ? "تعذّر التحديث، حاول لاحقًا." : "The update failed. Try again later."
             : phase === "downloading"
               ? ar ? "جارٍ تنزيل التحديث..." : "Downloading the update..."
               : phase === "installing"
-                ? ar ? "جارٍ تثبيت التحديث وإعادة تشغيل التطبيق..." : "Installing the update and restarting Azkar..."
+                ? ar ? "جارٍ التثبيت..." : "Installing..."
                 : ar ? "حدّث الآن أو اختر «ليس الآن» للمتابعة." : "Update now, or choose Not now to continue."}
         </span>
       </div>
       {phase === "available" || phase === "failed" ? (
-        <div className="update-notice-actions">
-          <button type="button" className="btn btn-primary" onClick={() => void install()}>
+        <>
+          <button className="btn btn-primary" onClick={() => void install()}>
             {ar ? phase === "failed" ? "إعادة المحاولة" : "تحديث" : phase === "failed" ? "Retry" : "Update"}
           </button>
-          <button type="button" className="btn btn-ghost" onClick={later}>
+          <button className="btn" onClick={later}>
             {ar ? "ليس الآن" : "Not now"}
           </button>
-        </div>
+        </>
+      ) : phase === "downloading" ? (
+        <span>{percent}%</span>
       ) : (
-        <div className="update-notice-actions">
-          <span>{phase === "downloading" ? `${percent}%` : ar ? "جارٍ التثبيت..." : "Installing..."}</span>
-        </div>
+        <span>{ar ? "جارٍ التثبيت..." : "Installing..."}</span>
       )}
-    </section>
+    </div>
   );
 }
