@@ -49,3 +49,35 @@ export const homeHadiths: readonly HomeHadith[] = [
     sourceEn: "Sahih al-Bukhari 6464",
   },
 ];
+
+const LAST_HOME_HADITH_KEY = "azkar.last-home-hadith-index";
+
+/** Choose once per app launch, avoiding the hadith shown on the previous launch. */
+export function getHomeHadithForLaunch(): HomeHadith {
+  let previousIndex = -1;
+
+  try {
+    const savedIndex = window.localStorage.getItem(LAST_HOME_HADITH_KEY);
+    if (savedIndex !== null) {
+      const parsedIndex = Number(savedIndex);
+      if (Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < homeHadiths.length) {
+        previousIndex = parsedIndex;
+      }
+    }
+  } catch {
+    // Continue with a random choice if local storage is unavailable.
+  }
+
+  const availableIndexes = homeHadiths
+    .map((_, index) => index)
+    .filter((index) => index !== previousIndex);
+  const selectedIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)] ?? 0;
+
+  try {
+    window.localStorage.setItem(LAST_HOME_HADITH_KEY, String(selectedIndex));
+  } catch {
+    // The selection still works for this launch if local storage is unavailable.
+  }
+
+  return homeHadiths[selectedIndex];
+}
