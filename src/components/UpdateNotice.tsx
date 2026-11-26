@@ -4,10 +4,20 @@ import { check, type Update } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 
 const CHECK_EVERY_MS = 6 * 60 * 60 * 1000;
+const DISMISSED_UPDATE_PREFIX = "azkar.dismissed-update.";
 
 type Phase = "available" | "downloading" | "installing" | "failed";
 
-/** Shows a card when a newer signed release is published, and installs it in place. */
+function wasDismissed(version: string, fallbackVersion: string | null): boolean {
+  if (fallbackVersion === version) return true;
+  try {
+    return window.sessionStorage.getItem(`${DISMISSED_UPDATE_PREFIX}${version}`) === "1";
+  } catch {
+    return false;
+  }
+}
+
+/** Shows an in-page banner for newer signed releases and installs them in place. */
 export function UpdateNotice({ ar }: { ar: boolean }) {
   const [update, setUpdate] = useState<Update | null>(null);
   const [phase, setPhase] = useState<Phase>("available");
@@ -22,7 +32,7 @@ export function UpdateNotice({ ar }: { ar: boolean }) {
       if (busy.current) return;
       try {
         const found = await check();
-        if (!cancelled && found && found.version !== laterVersion.current) {
+        if (!cancelled && found && !wasDismissed(found.version, laterVersion.current)) {
           setUpdate(found);
           setPhase("available");
         }
@@ -63,38 +73,49 @@ export function UpdateNotice({ ar }: { ar: boolean }) {
   };
 
   const later = () => {
-    if (update) laterVersion.current = update.version;
+    if (update) {
+      laterVersion.current = update.version;
+      try {
+        window.sessionStorage.setItem(`${DISMISSED_UPDATE_PREFIX}${update.version}`, "1");
+      } catch {
+        // Keep the dismissal for this component session if storage is unavailable.
+      }
+    }
     setUpdate(null);
   };
 
   if (!update) return null;
 
   return (
-    <div className="update-notice" role="status">
-      <div>
+    <section className="update-notice" role="status" aria-live="polite">
+      <div className="update-notice-copy">
         <strong>
-          {ar ? `تحديث جديد ${update.version}` : `Azkar ${update.version} is available`}
+          {ar ? `يتوفر تحديث جديد من أذكار (${update.version})` : `Azkar ${update.version} is available`}
         </strong>
         <span>
           {phase === "failed"
-            ? ar ? "تعذّر التحديث، حاول لاحقًا." : "The update failed. Try again later."
-            : ar ? "سيتم إعادة تشغيل التطبيق بعد التثبيت." : "Azkar will restart after the update."}
+            ? ar ? "تعذّر تثبيت التحديث. حاول مرة أخرى." : "The update could not be installed. Try again."
+            : phase === "downloading"
+              ? ar ? "جارٍ تنزيل التحديث..." : "Downloading the update..."
+              : phase === "installing"
+                ? ar ? "جارٍ تثبيت التحديث وإعادة تشغيل التطبيق..." : "Installing the update and restarting Azkar..."
+                : ar ? "حدّث الآن أو اختر «ليس الآن» للمتابعة." : "Update now, or choose Not now to continue."}
         </span>
       </div>
       {phase === "available" || phase === "failed" ? (
-        <>
-          <button className="btn btn-primary" onClick={() => void install()}>
-            {ar ? "تثبيت" : "Install"}
+        <div className="update-notice-actions">
+          <button type="button" className="btn btn-primary" onClick={() => void install()}>
+            {ar ? phase === "failed" ? "إعادة المحاولة" : "تحديث" : phase === "failed" ? "Retry" : "Update"}
           </button>
-          <button className="btn" onClick={later}>
-            {ar ? "لاحقًا" : "Later"}
+          <button type="button" className="btn btn-ghost" onClick={later}>
+            {ar ? "ليس الآن" : "Not now"}
           </button>
-        </>
-      ) : phase === "downloading" ? (
-        <span>{percent}%</span>
+        </div>
       ) : (
-        <span>{ar ? "جارٍ التثبيت..." : "Installing..."}</span>
+        <div className="update-notice-actions">
+          <span>{phase === "downloading" ? `${percent}%` : ar ? "جارٍ التثبيت..." : "Installing..."}</span>
+        </div>
       )}
-    </div>
+    </section>
   );
 }
