@@ -27,8 +27,8 @@ no longer be updated and users have to reinstall.
    `src-tauri/tauri.conf.json`, `package.json`, and `src-tauri/Cargo.toml`.
 2. Commit, then tag and push:
 
-       git tag v0.4.11
-       git push origin v0.4.11
+       git tag v0.4.12
+       git push origin v0.4.12
 
 3. GitHub Actions builds the installer, signs it, and publishes the installer,
    signature, and `latest.json` to the same tagged release. The repository must be
