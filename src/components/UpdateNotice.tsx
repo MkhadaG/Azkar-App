@@ -3,7 +3,7 @@ import { isTauri } from "@tauri-apps/api/core";
 import { check, type Update } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 
-const CHECK_EVERY_MS = 6 * 60 * 60 * 1000;
+const CHECK_EVERY_MS = 15 * 60 * 1000;
 const DISMISSED_UPDATE_PREFIX = "azkar.dismissed-update.";
 
 type Phase = "available" | "downloading" | "installing" | "failed";
@@ -23,13 +23,15 @@ export function UpdateNotice({ ar }: { ar: boolean }) {
   const [phase, setPhase] = useState<Phase>("available");
   const [percent, setPercent] = useState(0);
   const busy = useRef(false);
+  const checking = useRef(false);
   const laterVersion = useRef<string | null>(null);
 
   useEffect(() => {
     if (!isTauri()) return;
     let cancelled = false;
     const look = async () => {
-      if (busy.current) return;
+      if (busy.current || checking.current) return;
+      checking.current = true;
       try {
         const found = await check();
         if (!cancelled && found && !wasDismissed(found.version, laterVersion.current)) {
@@ -38,12 +40,24 @@ export function UpdateNotice({ ar }: { ar: boolean }) {
         }
       } catch (error) {
         console.warn("Could not check for updates.", error);
+      } finally {
+        checking.current = false;
       }
     };
+    const checkWhenVisible = () => {
+      if (document.visibilityState === "visible") void look();
+    };
+
+    // The main window can be hidden in the tray without restarting the app.
+    // Recheck when the user brings it back, so newly published releases appear immediately.
     void look();
+    window.addEventListener("focus", look);
+    document.addEventListener("visibilitychange", checkWhenVisible);
     const timer = window.setInterval(() => void look(), CHECK_EVERY_MS);
     return () => {
       cancelled = true;
+      window.removeEventListener("focus", look);
+      document.removeEventListener("visibilitychange", checkWhenVisible);
       window.clearInterval(timer);
     };
   }, []);
