@@ -27,12 +27,13 @@ no longer be updated and users have to reinstall.
    `src-tauri/tauri.conf.json`, `package.json`, and `src-tauri/Cargo.toml`.
 2. Commit, then tag and push:
 
-       git tag v0.4.9
-       git push origin v0.4.9
+       git tag v0.4.10
+       git push origin v0.4.10
 
-3. GitHub Actions builds the installer, signs it, and publishes a release with
-   `latest.json`. Running Azkar shows the update card within a few hours (or on its
-   next start), and the user clicks Install. The app restarts when it is finished.
+3. GitHub Actions builds the installer, signs it, and publishes the installer,
+   signature, and `latest.json` to the same tagged release. The repository must be
+   public so installed copies can read the updater feed. On app start (or within six
+   hours while running), Azkar checks for the newer version and shows the update card.
 
 The file to share with new users is the `Azkar_<version>_x64-setup.exe` attached to
 the release. It is one installer that includes the app.
