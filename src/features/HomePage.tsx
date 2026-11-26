@@ -4,7 +4,6 @@ import type { HomeHadith } from "../app/hadiths";
 import type { copy } from "../app/locale";
 import { Countdown, useNow } from "../components/Countdown";
 import { Icon, type IconName } from "../components/Icon";
-import { UpdateNotice } from "../components/UpdateNotice";
 import { nextPrayer, prayerNames, toZonedInstant, type PrayerSchedule } from "../services/prayer";
 
 const prayerOrder = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"] as const;
@@ -48,7 +47,6 @@ export function HomePage({ state, text, hadith, onNavigate, schedules, loading, 
 
   return (
     <div className="page home-page">
-      <UpdateNotice ar={ar} />
       <section className="card next-card" aria-live="polite">
         <div className="next-top">
           <span className="eyebrow"><span className="live-dot" />{text.nextPrayer}</span>
