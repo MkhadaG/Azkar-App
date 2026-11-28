@@ -32,8 +32,8 @@ no longer be updated and users have to reinstall.
 
 3. GitHub Actions builds the installer, signs it, and publishes the installer,
    signature, and `latest.json` to the same tagged release. The repository must be
-   public so installed copies can read the updater feed. On app start (or within six
-   hours while running), Azkar checks for the newer version and shows the update card.
+   public so installed copies can read the updater feed. On app start (or within 15
+   minutes while running), Azkar checks for the newer version and shows the update card.
 
 The file to share with new users is the `Azkar_<version>_x64-setup.exe` attached to
 the release. It is one installer that includes the app.
