@@ -144,7 +144,7 @@ const NATIVE_TASKBAR_CALENDAR_MONITOR_TIMER_ID: usize = 43;
 #[cfg(target_os = "windows")]
 const NATIVE_TASKBAR_CALENDAR_MONITOR_INTERVAL_MS: u32 = 50;
 #[cfg(target_os = "windows")]
-const NATIVE_TASKBAR_HOVER_DELAY_MS: u32 = 1_000;
+const NATIVE_TASKBAR_HOVER_DELAY_MS: u32 = 500;
 const NATIVE_TASKBAR_CALENDAR_CLOSE_GRACE_MS: u64 = 50;
 
 #[cfg(target_os = "windows")]
@@ -795,15 +795,15 @@ unsafe extern "system" fn native_taskbar_widget_wndproc(
                         .unwrap_or_else(|error| error.into_inner());
                     !data.suppress_hover_until_leave && !PRAYER_CALENDAR_OPEN.load(Ordering::Acquire)
                 };
+                // Arm a real delayed hover notification. Do not open the flyout
+                // on WM_MOUSEMOVE: that fires immediately and can flicker as
+                // Explorer sends rapid enter/leave transitions.
                 let mut tracking: TRACKMOUSEEVENT = std::mem::zeroed();
                 tracking.cbSize = std::mem::size_of::<TRACKMOUSEEVENT>() as u32;
-                tracking.dwFlags = TME_LEAVE;
+                tracking.dwFlags = TME_LEAVE | (if should_hover_open { TME_HOVER } else { 0 });
                 tracking.hwndTrack = hwnd;
-                tracking.dwHoverTime = 0;
+                tracking.dwHoverTime = NATIVE_TASKBAR_HOVER_DELAY_MS;
                 TrackMouseEvent(&mut tracking);
-                if should_hover_open {
-                    request_prayer_calendar_open();
-                }
                 render_native_taskbar_widget(hwnd);
             }
             0
@@ -945,13 +945,10 @@ unsafe extern "system" fn native_taskbar_widget_wndproc(
                         let should_hover_open = !suppressed && !PRAYER_CALENDAR_OPEN.load(Ordering::Acquire);
                         let mut tracking: TRACKMOUSEEVENT = std::mem::zeroed();
                         tracking.cbSize = std::mem::size_of::<TRACKMOUSEEVENT>() as u32;
-                        tracking.dwFlags = TME_LEAVE;
+                        tracking.dwFlags = TME_LEAVE | (if should_hover_open { TME_HOVER } else { 0 });
                         tracking.hwndTrack = hwnd;
-                        tracking.dwHoverTime = 0;
+                        tracking.dwHoverTime = NATIVE_TASKBAR_HOVER_DELAY_MS;
                         TrackMouseEvent(&mut tracking);
-                        if should_hover_open {
-                            request_prayer_calendar_open();
-                        }
                     }
                     render_native_taskbar_widget(hwnd);
                 }
@@ -1396,26 +1393,6 @@ fn prewarm_prayer_calendar(app: AppHandle) {
     if let Ok(window) = build_prayer_calendar_window(&app, "dark", false) {
         let _ = window.hide();
     }
-}
-
-#[cfg(target_os = "windows")]
-fn request_prayer_calendar_open() {
-    let Some(app) = TASKBAR_APP_HANDLE.get().cloned() else { return; };
-    let theme = native_taskbar_widget_data()
-        .lock()
-        .unwrap_or_else(|error| error.into_inner())
-        .app_theme
-        .clone();
-    tauri::async_runtime::spawn(async move {
-        // The pointer can leave before this async task runs. Do not open for a hover that has ended.
-        let still_hovered = native_taskbar_widget_data()
-            .lock()
-            .map(|data| data.hovered)
-            .unwrap_or(false);
-        if still_hovered {
-            let _ = open_prayer_calendar(app, theme, false).await;
-        }
-    });
 }
 
 #[cfg(target_os = "windows")]

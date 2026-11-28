@@ -1,6 +1,6 @@
 [package]
 name = "azkar"
-version = "0.4.13"
+version = "0.4.14"
 description = "A calm, private companion for everyday worship"
 authors = ["Azkar"]
 edition = "2021"
