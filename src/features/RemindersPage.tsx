@@ -64,10 +64,11 @@ export function RemindersPage({ state, onChange }: RemindersPageProps) {
       await notify(
         ar ? "أذكار" : "Azkar",
         ar ? "هذا تنبيه تجريبي. جزاك الله خيرًا." : "This is a test notification. May Allah reward you.",
+        ar ? "فتح أذكار" : "Open Azkar",
       );
       setMessage(ar
-        ? "أرسل Windows التنبيه التجريبي. إذا ظهر في مركز الإشعارات فقط، فعّل لافتات Azkar من إعدادات Windows."
-        : "The test was sent through Windows notifications. If it only appears in Notification Center, enable notification banners for Azkar in Windows Settings.");
+        ? "أرسل Windows تذكير الصلاة التجريبي. إذا لم يظهر على الشاشة، فتحقق من إعدادات لافتات الإشعارات والتركيز في Windows."
+        : "Windows received the test reminder. If it still does not appear on screen, check Azkar notification banners and Focus settings in Windows.");
     } catch (reason) {
       setMessage(reason instanceof Error ? reason.message : (ar ? "تعذر إرسال التنبيه." : "Could not send the notification."));
     } finally {

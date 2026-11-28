@@ -197,6 +197,7 @@ function App() {
         void notify(
           ar ? "حان وقت الصلاة" : "Prayer time",
           ar ? `حان وقت صلاة ${prayerNames[reminder.name].ar}` : `It's time for ${prayerNames[reminder.name].en}.`,
+          ar ? "فتح أذكار" : "Open Azkar",
         ).catch((reason) => console.error("Could not send the Azkar prayer reminder.", reason));
       }
     }, REMINDER_CHECK_MS);

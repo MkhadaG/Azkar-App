@@ -231,7 +231,7 @@ fn taskbar_widget_geometry() -> Result<(windows_sys::Win32::Foundation::HWND, i3
     let scale = dpi as f64 / 96.0;
     let width = (LOGICAL_WIDTH as f64 * scale).round() as i32;
     let height = (LOGICAL_HEIGHT as f64 * scale).round() as i32;
-    let margin = (4.0 * scale).round() as i32;
+    let margin = 0;
     let taskbar_width = client.right - client.left;
     let taskbar_height = client.bottom - client.top;
 
@@ -1715,6 +1715,53 @@ fn initialize_default_open_on_startup(app: &AppHandle) {
 }
 
 #[tauri::command]
+fn send_prayer_notification(
+    app: AppHandle,
+    title: String,
+    body: String,
+    open_label: String,
+) -> Result<(), String> {
+    #[cfg(target_os = "windows")]
+    {
+        use notify_rust::{Notification, Timeout, Urgency};
+
+        let mut notification = Notification::new();
+        notification
+            .app_id("com.azkar.desktop")
+            .summary(&title)
+            .body(&body)
+            .urgency(Urgency::Critical)
+            .timeout(Timeout::Never)
+            .action("open", &open_label);
+
+        let handle = notification
+            .show()
+            .map_err(|error| format!("Windows could not show the prayer reminder: {error}"))?;
+        tauri::async_runtime::spawn_blocking(move || {
+            let _ = handle.wait_for_response(|response: &notify_rust::NotificationResponse| {
+                let should_open = matches!(response, notify_rust::NotificationResponse::Default)
+                    || matches!(response, notify_rust::NotificationResponse::Action(action) if action == "open");
+                if should_open {
+                    show_main_window(&app);
+                }
+            });
+        });
+        Ok(())
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        use tauri_plugin_notification::NotificationExt;
+        app.notification()
+            .builder()
+            .title(title)
+            .body(body)
+            .show()
+            .map_err(|error| error.to_string())
+    }
+}
+
+#[tauri::command]
 fn quit_app(app: AppHandle) {
     app.exit(0);
 }
@@ -1748,6 +1795,7 @@ pub fn run() {
             reposition_taskbar_widget,
             set_open_on_startup,
             is_open_on_startup,
+            send_prayer_notification,
             quit_app
         ])
         .on_window_event(|window, event| match event {
